@@ -1,0 +1,7 @@
+[core]
+    remote = dataremote
+['remote "dataremote"']
+    url = gdrive://1B0ALl8q9yO_qa8BnnQ82fu_PYj0jJkFf
+    gdrive_acknowledge_abuse = true
+    gdrive_client_id = 672988054028-oq2pcv3nre8lfarac73egk2c9oip6qnq.apps.googleusercontent.com
+    gdrive_client_secret = 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
