@@ -1,0 +1,32 @@
+
+        Driver Drowsiness Detection Dataset Analysis Report
+        ================================================
+
+        1. Class Distribution:
+           - Drowsy: 22348 images
+           - Non-drowsy: 19445 images
+           - Class balance ratio: 1.15
+
+        2. Image Properties:
+           - Unique dimensions: 1
+           - Color channels: {3}
+           - File formats: {'.png'}
+           - Average aspect ratio: 1.00
+
+        3. Quality Issues:
+           - Corrupted images: 0
+           - Duplicate pairs: 28972
+
+        4. Generated Visualizations:
+           - Class distribution plot
+           - Image properties plots
+           - Pixel intensity distributions
+           - Sample images from each class
+           - Augmentation examples
+
+        Recommendations:
+        1. Classes are relatively balanced
+        2. Image dimensions are consistent
+        3. No corrupted images found
+        4. Remove or handle duplicates
+        
