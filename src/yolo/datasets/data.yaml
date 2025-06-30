@@ -1,0 +1,6 @@
+train: E:/Workspace/Farhaal/Driver_Drowsiness_Detection/src/yolo/datasets/train
+val: E:/Workspace/Farhaal/Driver_Drowsiness_Detection/src/yolo/datasets/val
+
+names:
+  0: "Drowsy"
+  1: "Non Drowsy"

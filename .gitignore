@@ -150,3 +150,5 @@ cython_debug/
 
 .gitconfig
 /dataset
+
+src/yolo/datasets/dataset_yolo/

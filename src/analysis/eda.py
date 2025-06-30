@@ -1,15 +1,9 @@
-import os
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
 import cv2
 from pathlib import Path
-from collections import Counter
-import shutil
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 import imagehash
 from tqdm import tqdm
 
@@ -17,7 +11,7 @@ class DrowsinessDatasetEDA:
     def __init__(self, dataset_path='dataset'):
         """Initialize the EDA class with dataset path."""
         self.dataset_path = Path(dataset_path)
-        self.plots_dir = Path('data/plots')
+        self.plots_dir = Path('outputs/plots')
         self.plots_dir.mkdir(exist_ok=True)
         
         # Set up plotting style
