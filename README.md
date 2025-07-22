@@ -1,6 +1,6 @@
 # Driver Drowsiness Detection 🚗💤
 
-Real-time detection using **YOLOv8** (face/eye detection) + **MobileNetV2**.  
+Real-time detection using **YOLOv8**, **MobileNetV2** (image classification).  
 Data is versioned with **DVC**, stored in **Google Drive** using Google Drive API via GCP (Google Cloud Platform).  
 Environment is cleanly managed via **virtualenv**.
 
@@ -26,47 +26,61 @@ dvc pull
 
 ---
 
-# Driver Drowsiness Detection - Exploratory Data Analysis
-
-This project performs comprehensive Exploratory Data Analysis (EDA) on a driver drowsiness detection dataset containing images classified as "drowsy" and "non-drowsy".
-
-## Project Structure
+# Project Structure
 
 ```
-Driver Drowsiness Detection/
-├── dataset/               # Dataset directory (DVC tracked)
-│   ├── drowsy/           # Drowsy class images
-│   └── non-drowsy/       # Non-drowsy class images
-├── src/                  # Source code
-│   └── analysis/         # Analysis scripts
-│       └── eda.py        # Main EDA script
-├── data/                 # Generated data
-│   └── plots/           # Generated plots and visualizations
-├── requirements.txt      # Python dependencies
-└── README.md            # This file
+Driver_Drowsiness_Detection/
+├── dataset.dvc
+├── outputs/
+│   └── plots/                # EDA plots and reports
+├── src/
+│   ├── analysis/
+│   │   └── eda.py            # Main EDA script
+│   ├── yolo/
+│   │   ├── datasets/         # YOLO dataset and config
+│   │   ├── prepare_dataset.py
+│   │   ├── train.py          # YOLOv8 training script
+│   │   └── runs/             # YOLOv8 training outputs (metrics, weights, plots)
+│   └── MobileNetv2/
+│       ├── train_mobilenetv2.py # MobileNetV2 training script
+│       └── outputs/             # MobileNetV2 training outputs (metrics, weights, plots)
+├── requirements.txt
+└── README.md
 ```
 
-## Setup and Installation
+---
 
-1. Create a virtual environment (recommended):
+## 🏆 Model Training & Evaluation
 
-   ```bash
-   python -m venv env
-   source env/bin/activate  # On Windows: env\Scripts\activate
-   ```
+### 1. YOLOv8 (Object Detection)
 
-2. Install dependencies:
+- **Train YOLOv8 classifier:**
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+  ```bash
+  cd src/yolo
+  python train.py
+  ```
 
-3. Pull the dataset (if using DVC):
-   ```bash
-   dvc pull
-   ```
+- **Outputs:**
+  - Model weights: `src/yolo/runs/classify/drowsiness_detection/weights/`
+  - Metrics & plots: `src/yolo/runs/classify/drowsiness_detection/`
 
-## Running the Analysis
+### 2. MobileNetV2 (Image Classification)
+
+- **Train MobileNetV2 classifier:**
+
+  ```bash
+  cd src/MobileNetv2
+  python train_mobilenetv2.py
+  ```
+
+- **Outputs:**
+  - Model weights: `src/MobileNetv2/outputs/best_mobilenetv2.pth`, `last_mobilenetv2.pth`
+  - Metrics & plots: `src/MobileNetv2/outputs/` (loss/accuracy curves, confusion matrix, classification report)
+
+---
+
+## 📊 Exploratory Data Analysis (EDA)
 
 To run the full EDA:
 
@@ -76,55 +90,18 @@ python src/analysis/eda.py
 
 This will:
 
-1. Analyze class distribution
-2. Examine image properties (dimensions, channels, formats)
-3. Analyze pixel intensities
-4. Check for quality issues (corrupted images, duplicates)
-5. Generate visualizations
-6. Create a comprehensive report
+- Analyze class distribution
+- Examine image properties (dimensions, channels, formats)
+- Analyze pixel intensities
+- Check for quality issues (corrupted images, duplicates)
+- Generate visualizations
+- Create a comprehensive report
 
-## Generated Outputs
+**EDA outputs:**
 
-The script generates the following outputs in the `data/plots` directory:
+- `outputs/plots/` directory (class distribution, image properties, pixel intensities, sample images, augmentations, eda_report.txt)
 
-- `class_distribution.png`: Distribution of images across classes
-- `image_properties.png`: Image dimension and aspect ratio distributions
-- `pixel_intensities.png`: RGB channel distributions
-- `sample_images.png`: Sample images from each class
-- `augmentations.png`: Example augmentation techniques
-- `eda_report.txt`: Comprehensive analysis report
-
-## Analysis Features
-
-The EDA script performs the following analyses:
-
-1. **Class Distribution Analysis**
-
-   - Counts images in each class
-   - Visualizes class balance
-   - Calculates class balance ratio
-
-2. **Image Property Analysis**
-
-   - Image dimensions
-   - Color channels
-   - File formats
-   - Aspect ratios
-
-3. **Pixel Intensity Analysis**
-
-   - RGB channel distributions
-   - Comparison between classes
-
-4. **Quality Checks**
-
-   - Identifies corrupted images
-   - Detects duplicate images
-   - Verifies file integrity
-
-5. **Visualization Examples**
-   - Sample images from each class
-   - Common augmentation techniques
+---
 
 ## Contributing
 
