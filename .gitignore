@@ -153,4 +153,3 @@ cython_debug/
 
 src/yolo/datasets/dataset_yolo/
 
-*.pth
