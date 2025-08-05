@@ -101,6 +101,72 @@ This will:
 
 - `outputs/plots/` directory (class distribution, image properties, pixel intensities, sample images, augmentations, eda_report.txt)
 
+## 🧪 **Accurate Model Testing**
+
+For more accurate results, use the comprehensive testing script:
+
+### **1. Single Image Testing**
+
+```bash
+python src/test_models.py --mode single --input path/to/image.jpg
+```
+
+### **2. Batch Image Testing**
+
+```bash
+python src/test_models.py --mode batch --input path/to/image/folder --confidence-threshold 0.7
+```
+
+### **3. Video Analysis with Sliding Window**
+
+```bash
+python src/test_models.py --mode video --input path/to/video.mp4 --window-size 15 --confidence-threshold 0.6
+```
+
+### **4. Webcam Analysis Mode**
+
+```bash
+python src/test_models.py --mode webcam --input dummy
+```
+
+### **Testing Features:**
+
+#### **🔍 Single Image Analysis:**
+
+- Multiple predictions per image (5 runs)
+- Confidence statistics (mean, std dev)
+- Prediction consistency checking
+- Visual result display
+
+#### **📁 Batch Testing:**
+
+- Process entire folders of images
+- Confidence filtering (≥0.7 default)
+- Consistency checking (≥80% agreement)
+- Summary statistics and high-confidence results
+
+#### **🎬 Video Analysis:**
+
+- Sliding window approach (10-15 frames)
+- Temporal consistency checking
+- Confidence-based decision making
+- Real-time display with confidence indicators
+
+#### **📹 Webcam Analysis:**
+
+- Periodic detailed analysis (every 30 frames)
+- Instant analysis on demand (press 'a')
+- Multiple prediction averaging
+- Confidence threshold filtering
+
+#### **📊 Accuracy Improvements:**
+
+- **Multiple Predictions**: Each image/frame classified multiple times
+- **Consistency Checking**: Only accept results with high agreement
+- **Confidence Filtering**: Filter out low-confidence predictions
+- **Temporal Smoothing**: Use sliding windows for video analysis
+- **Statistical Validation**: Calculate confidence intervals and consistency scores
+
 ---
 
 ## Contributing
