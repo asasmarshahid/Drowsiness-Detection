@@ -14,3 +14,4 @@ torchaudio==2.7.1+cu128
 torchvision==0.22.1+cu128
 ultralytics==8.3.160
 ultralytics-thop==2.0.12
+mediapipe
