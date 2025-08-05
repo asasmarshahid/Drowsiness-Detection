@@ -161,11 +161,21 @@ python src/test_models.py --mode webcam --input dummy
 
 #### **📊 Accuracy Improvements:**
 
-- **Multiple Predictions**: Each image/frame classified multiple times
+- **Face Detection**: Uses dlib to detect and extract faces from images/videos
+- **Face Extraction**: Automatically crops and processes detected faces
+- **Multiple Predictions**: Each face image classified multiple times
 - **Consistency Checking**: Only accept results with high agreement
 - **Confidence Filtering**: Filter out low-confidence predictions
 - **Temporal Smoothing**: Use sliding windows for video analysis
 - **Statistical Validation**: Calculate confidence intervals and consistency scores
+
+#### **🔍 Face Detection Features:**
+
+- **Automatic Face Detection**: Uses dlib's frontal face detector
+- **Face Cropping**: Extracts face regions with padding for better classification
+- **Multiple Face Support**: Can detect and process multiple faces in an image
+- **Largest Face Selection**: Automatically selects the largest face as the main subject
+- **Visual Feedback**: Shows face bounding boxes and detection results
 
 ---
 
