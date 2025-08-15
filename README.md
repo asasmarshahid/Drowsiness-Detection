@@ -1,6 +1,6 @@
 # Driver Drowsiness Detection 🚗💤
 
-Real-time detection using **YOLOv8**, **MobileNetV2** (image classification).  
+Real-time detection using **YOLOv8**, **MobileNetV2**, and **Custom CNN** for image classification.  
 Data is versioned with **DVC**, stored in **Google Drive** using Google Drive API via GCP (Google Cloud Platform).  
 Environment is cleanly managed via **virtualenv**.
 
@@ -40,10 +40,14 @@ Driver_Drowsiness_Detection/
 │   │   ├── datasets/         # YOLO dataset and config
 │   │   ├── prepare_dataset.py
 │   │   ├── train.py          # YOLOv8 training script
-│   │   └── runs/             # YOLOv8 training outputs (metrics, weights, plots)
-│   └── MobileNetv2/
-│       ├── train_mobilenetv2.py # MobileNetV2 training script
-│       └── outputs/             # MobileNetV2 training outputs (metrics, weights, plots)
+│   │   └── runs/             # YOLOv8 training outputs
+│   ├── MobileNetv2/
+│   │   ├── train_mobilenetv2.py # MobileNetV2 training script
+│   │   └── outputs/             # MobileNetV2 training outputs
+│   └── Custom_CNN/
+│       ├── model.py          # Custom CNN architecture
+│       ├── train.py          # Training script
+│       └── outputs/          # Training outputs
 ├── requirements.txt
 └── README.md
 ```
@@ -52,7 +56,7 @@ Driver_Drowsiness_Detection/
 
 ## 🏆 Model Training & Evaluation
 
-### 1. YOLOv8 (Object Detection)
+### 1. YOLOv8 (Classification)
 
 - **Train YOLOv8 classifier:**
 
@@ -75,8 +79,29 @@ Driver_Drowsiness_Detection/
   ```
 
 - **Outputs:**
-  - Model weights: `src/MobileNetv2/outputs/best_mobilenetv2.pth`, `last_mobilenetv2.pth`
-  - Metrics & plots: `src/MobileNetv2/outputs/` (loss/accuracy curves, confusion matrix, classification report)
+  - Model weights: `src/MobileNetv2/outputs/best_mobilenetv2.pth`
+  - Metrics & plots: `src/MobileNetv2/outputs/`
+
+### 3. Custom CNN (Image Classification)
+
+- **Train Custom CNN:**
+
+  ```bash
+  cd src/Custom_CNN
+  python train.py
+  ```
+
+- **Architecture:**
+
+  - 4 convolutional blocks with batch normalization
+  - Dropout for regularization
+  - Fully connected layers: 512→128→2
+  - Input size: 224x224x3
+
+- **Outputs:**
+  - Model weights: `src/Custom_CNN/outputs/best_model.pth`
+  - Training curves, confusion matrix
+  - Classification report
 
 ---
 
@@ -101,81 +126,97 @@ This will:
 
 - `outputs/plots/` directory (class distribution, image properties, pixel intensities, sample images, augmentations, eda_report.txt)
 
-## 🧪 **Accurate Model Testing**
+## 🔎 Inference (MediaPipe + Model Selection)
 
-For more accurate results, use the comprehensive testing script:
+Run fast inference on images or videos using MediaPipe for face detection and your choice of classifier:
 
-### **1. Single Image Testing**
+- YOLO (YOLOv8 classifier)
+- MobileNetV2
+- Custom CNN (4-layer CNN with batch normalization)
 
-```bash
-python src/test_models.py --mode single --input path/to/image.jpg
-```
+### Features:
 
-### **2. Batch Image Testing**
+- MediaPipe face detection and ROI extraction
+- Real-time FPS display and latency metrics
+- Controlled video playback (24-30 FPS)
+- Face detection optimization (10 detections/sec)
+- Clear visual feedback with color-coded results
 
-```bash
-python src/test_models.py --mode batch --input path/to/image/folder --confidence-threshold 0.7
-```
-
-### **3. Video Analysis with Sliding Window**
-
-```bash
-python src/test_models.py --mode video --input path/to/video.mp4 --window-size 15 --confidence-threshold 0.6
-```
-
-### **4. Webcam Analysis Mode**
+### Image Inference
 
 ```bash
-python src/test_models.py --mode webcam --input dummy
+# YOLO
+python src/inference_combined.py --mode image \
+  --input path/to/image.jpg \
+  --model-type yolo \
+  --yolo-weights src/yolo/runs/classify/drowsiness_detection/weights/best.pt
+
+# MobileNetV2
+python src/inference_combined.py --mode image \
+  --input path/to/image.jpg \
+  --model-type mobilenet \
+  --mobilenet-weights src/MobileNetv2/outputs/best_mobilenetv2.pth
+
+# Custom CNN
+python src/inference_combined.py --mode image \
+  --input path/to/image.jpg \
+  --model-type custom_cnn \
+  --custom-cnn-weights src/Custom_CNN/outputs/best_model.pth
 ```
 
-### **Testing Features:**
+### Video Inference
 
-#### **🔍 Single Image Analysis:**
+```bash
+# YOLO
+python src/inference_combined.py --mode video \
+  --input path/to/video.mp4 \
+  --model-type yolo \
+  --yolo-weights src/yolo/runs/classify/drowsiness_detection/weights/best.pt \
+  --output result.mp4   # optional
 
-- Multiple predictions per image (5 runs)
-- Confidence statistics (mean, std dev)
-- Prediction consistency checking
-- Visual result display
+# MobileNetV2
+python src/inference_combined.py --mode video \
+  --input path/to/video.mp4 \
+  --model-type mobilenet \
+  --mobilenet-weights src/MobileNetv2/outputs/best_mobilenetv2.pth \
+  --output result.mp4   # optional
 
-#### **📁 Batch Testing:**
+# Custom CNN
+python src/inference_combined.py --mode video \
+  --input path/to/video.mp4 \
+  --model-type custom_cnn \
+  --custom-cnn-weights src/Custom_CNN/outputs/best_model.pth \
+  --output result.mp4   # optional
+```
 
-- Process entire folders of images
-- Confidence filtering (≥0.7 default)
-- Consistency checking (≥80% agreement)
-- Summary statistics and high-confidence results
+### Model Details:
 
-#### **🎬 Video Analysis:**
+#### YOLOv8 Classifier
 
-- Sliding window approach (10-15 frames)
-- Temporal consistency checking
-- Confidence-based decision making
-- Real-time display with confidence indicators
+- Pre-trained backbone
+- Classification head fine-tuned on drowsiness data
+- Fast inference with CUDA support
 
-#### **📹 Webcam Analysis:**
+#### MobileNetV2
 
-- Periodic detailed analysis (every 30 frames)
-- Instant analysis on demand (press 'a')
-- Multiple prediction averaging
-- Confidence threshold filtering
+- Efficient mobile-optimized architecture
+- ImageNet pre-trained weights
+- Custom classification head
 
-#### **📊 Accuracy Improvements:**
+#### Custom CNN
 
-- **Face Detection**: Uses dlib to detect and extract faces from images/videos
-- **Face Extraction**: Automatically crops and processes detected faces
-- **Multiple Predictions**: Each face image classified multiple times
-- **Consistency Checking**: Only accept results with high agreement
-- **Confidence Filtering**: Filter out low-confidence predictions
-- **Temporal Smoothing**: Use sliding windows for video analysis
-- **Statistical Validation**: Calculate confidence intervals and consistency scores
+- 4 convolutional blocks with batch normalization
+- Dropout for regularization
+- Fully connected layers: 512→128→2
+- Trained from scratch on drowsiness data
 
-#### **🔍 Face Detection Features:**
+### Notes:
 
-- **Automatic Face Detection**: Uses dlib's frontal face detector
-- **Face Cropping**: Extracts face regions with padding for better classification
-- **Multiple Face Support**: Can detect and process multiple faces in an image
-- **Largest Face Selection**: Automatically selects the largest face as the main subject
-- **Visual Feedback**: Shows face bounding boxes and detection results
+- All models use 224x224 input size
+- Class mapping: index 0 → DROWSY, index 1 → NON-DROWSY
+- Preprocessing: Resize + ImageNet normalization
+- Face detection runs at ~10 FPS for efficiency
+- Video playback capped at 24-30 FPS
 
 ---
 
