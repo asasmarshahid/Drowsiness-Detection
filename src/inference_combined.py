@@ -48,11 +48,10 @@ class DrowsinessDetector:
                 raise ValueError("custom_cnn_weights_path is required for model_type='custom_cnn'")
             self.custom_cnn_model = self._load_custom_cnn(custom_cnn_weights_path)
             self.custom_cnn_transform = transforms.Compose([
-                transforms.ToPILImage(),
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-            ])
+                 transforms.Resize((224, 224)),
+                 transforms.ToTensor(),
+                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+             ])
         else:
             raise ValueError("model_type must be 'yolo', 'mobilenet', or 'custom_cnn'")
 
@@ -153,19 +152,26 @@ class DrowsinessDetector:
         return model
 
     def _predict_custom_cnn(self, face_img):
-        # Convert BGR to RGB and to PIL Image
-        rgb_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(rgb_img)
-        
-        # Transform and add batch dimension
-        tensor = self.custom_cnn_transform(pil_img).unsqueeze(0).to(self.device)
-        
-        start = time.perf_counter()
-        with torch.no_grad():
-            pred_class, confidence = self.custom_cnn_model.predict(tensor)
-        infer_ms = (time.perf_counter() - start) * 1000.0
-        
-        return pred_class.item(), confidence.item(), infer_ms
+        try:
+            rgb_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
+            if rgb_img.shape[:2] != (224, 224):
+                rgb_img = cv2.resize(rgb_img, (224, 224))
+            
+            pil_img = Image.fromarray(rgb_img)
+            
+            tensor = self.custom_cnn_transform(pil_img).unsqueeze(0).to(self.device)
+            
+            start = time.perf_counter()
+            with torch.no_grad():
+                pred_class, confidence = self.custom_cnn_model.predict(tensor)
+            infer_ms = (time.perf_counter() - start) * 1000.0
+            
+            return pred_class.item(), confidence.item(), infer_ms
+        except Exception as e:
+            print(f"Error in Custom CNN prediction: {str(e)}")
+            print(f"Input shape: {rgb_img.shape}")
+            print(f"Input type: {type(rgb_img)}")
+            return None, 0.0, 0.0
 
     def _predict(self, face_img):
         if self.model_type == 'yolo':
@@ -263,7 +269,7 @@ class DrowsinessDetector:
             writer = cv2.VideoWriter(output_path, fourcc, target_fps, (width, height))
             
         # Optimization: Process every N frames for face detection to reduce computational load
-        face_detection_interval = max(1, int(src_fps // 10))  # Detect faces ~10 times per second
+        face_detection_interval = max(1, int(src_fps // 30))  # Detect faces ~30 times per second
         frame_count = 0
         last_faces = []
         last_bbox = None
